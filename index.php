@@ -1,4 +1,5 @@
 <?php
+
 try {
   $pdo = new PDO('mysql:host=doskadpk.mysql.ukraine.com.ua;dbname=doskadpk_test', 'doskadpk_test', 'uebcykck');
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -10,10 +11,57 @@ catch (PDOException $e) {
   exit();
 }
 
-try{
+if (get_magic_quotes_gpc()) {
+  $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
+  while (list($key, $val) = each($process)) {
+    foreach ($val as $k => $v)
+    {
+      unset($process[$key][$k]);
+      if (is_array($v))
+      {
+        $process[$key][stripslashes($k)] = $v;
+        $process[] = &$process[$key][stripslashes($k)];
+      }
+      else
+      {
+        $process[$key][stripslashes($k)] = stripslashes($v);
+      }
+    }
+  }
+  unset($process);
+}
+
+if (isset($_GET['addjoke'])) {
+  include 'form.html.php';
+  exit();
+}
+
+if (isset($_POST['joketext'])) {
+  try
+  {
+    $sql = 'INSERT INTO joke SET
+        joketext = :joketext,
+        jokedate = CURDATE()';
+    $s = $pdo->prepare($sql);
+    $s->bindValue(':joketext', $_POST['joketext']);
+    $s->execute();
+  }
+  catch (PDOException $e)
+  {
+    $error = 'Error adding submitted joke: ' . $e->getMessage();
+    include 'error.html.php';
+    exit();
+  }
+
+  header('Location: .');
+  exit();
+}
+
+try {
   $sql = 'SELECT joketext FROM joke';
   $result = $pdo->query($sql);
-} catch (PDOException $e) {
+}
+catch (PDOException $e) {
   $error = 'Ошибка при извлечении шуток:' . $e->getMessage();
   include 'error.html.php';
   exit();

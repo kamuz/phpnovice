@@ -3,7 +3,8 @@
     <title>Jokes List</title>
   </head>
   <body>
-    <h1>Here are all the jokes in the database:</h1>
+    <p><a href="?addjoke">Add your own joke</a></p>
+    <p>Here are all the jokes in the database:</p>
     <?php foreach ($jokes as $joke): ?>
       <blockquote>
         <p>
