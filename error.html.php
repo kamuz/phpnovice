@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Script Output</title>
+    <title>Error message</title>
   </head>
   <body>
     <p>

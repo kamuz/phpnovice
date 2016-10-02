@@ -57,18 +57,34 @@ if (isset($_POST['joketext'])) {
   exit();
 }
 
+if(isset($_GET['deletejoke'])){
+  try {
+    $sql = 'DELETE FROM joke WHERE id= :id';
+    $s = $pdo->prepare($sql);
+    $s->bindValue(':id', $_POST['id']);
+    $s->execute();
+  } catch (Exception $e) {
+    $error = 'Error deleting joke: ' . $e->getMessage();
+    include 'error.html.php';
+    exit();
+  }
+  
+  header('Location: .');
+  exit();
+}
+
 try {
-  $sql = 'SELECT joketext FROM joke';
+  $sql = 'SELECT id, joketext FROM joke';
   $result = $pdo->query($sql);
 }
 catch (PDOException $e) {
-  $error = 'Ошибка при извлечении шуток:' . $e->getMessage();
+  $error = 'Error fetching jokes: ' . $e->getMessage();
   include 'error.html.php';
   exit();
 }
 
 while ($row = $result->fetch()){;
-  $jokes[] = $row['joketext'];
+  $jokes[] = array('id' => $row['id'], 'text'=> $row['joketext']);
 }
 
 include 'jokes.html.php';
