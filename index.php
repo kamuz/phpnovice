@@ -14,16 +14,13 @@ catch (PDOException $e) {
 if (get_magic_quotes_gpc()) {
   $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
   while (list($key, $val) = each($process)) {
-    foreach ($val as $k => $v)
-    {
+    foreach ($val as $k => $v) {
       unset($process[$key][$k]);
-      if (is_array($v))
-      {
+      if (is_array($v)) {
         $process[$key][stripslashes($k)] = $v;
         $process[] = &$process[$key][stripslashes($k)];
       }
-      else
-      {
+      else {
         $process[$key][stripslashes($k)] = stripslashes($v);
       }
     }
@@ -37,17 +34,12 @@ if (isset($_GET['addjoke'])) {
 }
 
 if (isset($_POST['joketext'])) {
-  try
-  {
-    $sql = 'INSERT INTO joke SET
-        joketext = :joketext,
-        jokedate = CURDATE()';
+  try {
+    $sql = 'INSERT INTO joke SET joketext = :joketext, jokedate = CURDATE()';
     $s = $pdo->prepare($sql);
     $s->bindValue(':joketext', $_POST['joketext']);
     $s->execute();
-  }
-  catch (PDOException $e)
-  {
+  } catch (PDOException $e) {
     $error = 'Error adding submitted joke: ' . $e->getMessage();
     include 'error.html.php';
     exit();
@@ -57,7 +49,7 @@ if (isset($_POST['joketext'])) {
   exit();
 }
 
-if(isset($_GET['deletejoke'])){
+if(isset($_GET['deletejoke'])) {
   try {
     $sql = 'DELETE FROM joke WHERE id= :id';
     $s = $pdo->prepare($sql);
@@ -74,17 +66,21 @@ if(isset($_GET['deletejoke'])){
 }
 
 try {
-  $sql = 'SELECT id, joketext FROM joke';
+  $sql = 'SELECT joke.id, joketext, name, email FROM joke INNER JOIN author ON authorid = author.id';
   $result = $pdo->query($sql);
-}
-catch (PDOException $e) {
+} catch (PDOException $e) {
   $error = 'Error fetching jokes: ' . $e->getMessage();
   include 'error.html.php';
   exit();
 }
 
-while ($row = $result->fetch()){;
-  $jokes[] = array('id' => $row['id'], 'text'=> $row['joketext']);
+foreach ($result as $row) {
+  $jokes[] = array(
+    'id' => $row['id'],
+    'text' => $row['joketext'],
+    'name' => $row['name'],
+    'email' => $row['email']
+  );
 }
 
 include 'jokes.html.php';

@@ -9,8 +9,9 @@
     <form action="?deletejoke" method="POST">
       <blockquote>
         <p>
-          <?php echo htmlspecialchars($joke['text'], ENT_QUOTES, 'UTF-8'); ?>
+          <?php echo htmlspecialchars($joke['text'], ENT_QUOTES, 'UTF-8');?>
           <input type="hidden" name="id" value="<?php echo $joke['id'];?>">
+          (author: <a href="emailto:<?php echo htmlspecialchars($joke['email'], ENT_QUOTES, 'UTF-8');?>"><?php echo htmlspecialchars($joke['name'], ENT_QUOTES, 'UTF-8');?>"</a>
           <input type="submit" value="Delete">
         </p>
       </blockquote>
