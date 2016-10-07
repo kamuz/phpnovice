@@ -1,15 +1,8 @@
 <?php
 
-try {
-  $pdo = new PDO('mysql:host=doskadpk.mysql.ukraine.com.ua;dbname=doskadpk_test', 'doskadpk_test', 'uebcykck');
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $pdo->exec('SET NAMES "utf8"');
-}
-catch (PDOException $e) {
-  $error = 'Unable to connect to the database server.' . $e->getMessage();
-  include 'error.html.php';
-  exit();
-}
+include 'db.inc.php';
+
+// Prepare data
 
 if (get_magic_quotes_gpc()) {
   $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
@@ -27,6 +20,8 @@ if (get_magic_quotes_gpc()) {
   }
   unset($process);
 }
+
+// Add new joke
 
 if (isset($_GET['addjoke'])) {
   include 'form.html.php';
@@ -49,6 +44,8 @@ if (isset($_POST['joketext'])) {
   exit();
 }
 
+// Delete joke
+
 if(isset($_GET['deletejoke'])) {
   try {
     $sql = 'DELETE FROM joke WHERE id= :id';
@@ -64,6 +61,8 @@ if(isset($_GET['deletejoke'])) {
   header('Location: .');
   exit();
 }
+
+// Get jokes
 
 try {
   $sql = 'SELECT joke.id, joketext, name, email FROM joke INNER JOIN author ON authorid = author.id';
